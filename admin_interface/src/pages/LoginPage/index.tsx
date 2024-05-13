@@ -137,7 +137,7 @@ export default function LoginPage() {
                     alt={`Carousel item ${index + 1}`}
                     width="1920"
                     height="1080"
-                    className="h-full w-full rounded-r-xl object-cover dark:brightness-[0.4] dark:grayscale"
+                    className="h-full w-full rounded-r-xl object-cover dark:brightness-[0.5]"
                   />
                 </CarouselItem>
               ))}
