@@ -1,14 +1,11 @@
 import {
-  CircleAlert,
-  LayoutDashboard,
-  MessagesSquare,
-  Route,
-  Settings,
   LogIn,
   Home,
   UserPlus,
   CalendarPlus,
   Dog,
+  UsersRound,
+  UserCog
 } from 'lucide-react'
 
 export interface NavLink {
@@ -36,10 +33,24 @@ export const sidelinks: SideLink[] = [
     icon: <LogIn size={18} />,
   },
   {
-    title: 'Account Creation',
+    title: "Account's Management",
     label: '',
-    href: '/account',
-    icon: <UserPlus size={18} />,
+    href: '',
+    icon: <UserCog size={18} />,
+    sub: [
+      {
+        title: 'Create Account',
+        label: '',
+        href: '/account',
+        icon: <UserPlus size={18} />,
+      },
+      {
+        title: 'All Accounts',
+        label: '',
+        href: '/accounts',
+        icon: <UsersRound size={18} />,
+      },
+    ],
   },
   {
     title: 'Booking Appointment',
