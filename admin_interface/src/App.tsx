@@ -5,7 +5,7 @@ import { routeTree } from './routes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from "@/components/theme-provider"
 import NotFoundPage from "@/pages/NotFoundPage"
-
+import { Toaster } from './components/ui/toaster';
 
 const router = createRouter({ 
     routeTree,
@@ -26,6 +26,7 @@ const App = () => {
             <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
               <QueryClientProvider client={queryClient}>
                   <RouterProvider router={router} />
+                  <Toaster />
               </QueryClientProvider>
             </ThemeProvider>
         </StrictMode>
