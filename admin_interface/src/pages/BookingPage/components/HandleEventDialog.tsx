@@ -32,14 +32,17 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './DatePicker.css'
 import { events } from '@/data/appointments';
+import { Appointment } from '@/utils/types';
 
 interface HandleEventDialogProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     selectedDates: Date[];
+    setSavedEvents: (events: any) => void;
+    savedEvents: Appointment[];
 }
 
-export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates } : HandleEventDialogProps) { 
+export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, setSavedEvents, savedEvents } : HandleEventDialogProps) { 
 
     const { toast } = useToast();
 
@@ -70,6 +73,17 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates } :
         console.log(endDate);
 
         //add event to the list of events
+        const newEvent = {
+            title: data.title,
+            type: data.type,
+            doctor: data.doctor,
+            owner: data.owner,
+            petName: data.petName,
+            start: data.start,
+            end: endDate,
+        };
+        setIsOpen(false);
+        setSavedEvents([...savedEvents, newEvent]);
         
     }
 

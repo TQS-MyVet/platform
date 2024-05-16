@@ -12,7 +12,7 @@ export default function CustomCalendar() {
     const[isHandleEventOpen, setIsHandleEventOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState< Appointment | null>(null);
     const [selectedDates, setSelectedDates] = useState<Date[]>([]);
-
+    const [savedEvents, setSavedEvents] = useState<Appointment[]>(events);
 
     const handleSelectEvent = (event: Appointment) => {
         setSelectedEvent(event);
@@ -28,7 +28,7 @@ export default function CustomCalendar() {
         <div>
             <Calendar className='font-semibold'
                 localizer={localizer}
-                events={events}
+                events={savedEvents}
                 startAccessor="start"
                 endAccessor="end"
                 onSelectSlot={handleSelectSlot}
@@ -37,7 +37,7 @@ export default function CustomCalendar() {
                 style={{ height: 600 }}
             />
             <EventDialog isOpen={isOpen} event={selectedEvent} setIsOpen={setIsOpen} />
-            <HandleEventDialog isOpen={isHandleEventOpen} setIsOpen={setIsHandleEventOpen} selectedDates={selectedDates} />
+            <HandleEventDialog isOpen={isHandleEventOpen} setIsOpen={setIsHandleEventOpen} selectedDates={selectedDates} setSavedEvents={setSavedEvents} savedEvents={savedEvents}/>
         </div>
     );
 }
