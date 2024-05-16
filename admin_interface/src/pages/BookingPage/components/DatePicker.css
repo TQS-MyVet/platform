@@ -1,0 +1,12 @@
+.react-datepicker__time-list-item.react-datepicker__time-list-item--selected {
+  background-color: #E11D48 !important;
+}
+
+.react-datepicker__header {
+  background-color: #E11D48 !important;
+}
+
+.react-datepicker-time__header {
+  background-color: #E11D48 !important;
+  color: white !important;
+}

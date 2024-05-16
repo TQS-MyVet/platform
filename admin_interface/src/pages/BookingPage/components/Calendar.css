@@ -1,0 +1,64 @@
+/* Cor de fundo para dias fora do alcance do mês atual */
+.rbc-off-range-bg { 
+    background-color: azure !important;
+    opacity: 0.5 !important;
+}
+
+/* Cor de fundo para o dia atual */
+.rbc-today {
+    background-color: #FFE5E9 !important; /* Tom mais claro de #E11D48 */
+    color: black !important;
+    span{
+        background-color: #E11D48 !important
+    }
+}
+
+/* Cabeçalho de cada coluna de dia/semana */
+.rbc-header{
+    background-color: #E11D48 !important;
+    color: white !important;
+}
+
+/* Cor de fundo para elementos ativos */
+.rbc-active{
+    background-color: #E11D48 !important;
+    color : white !important;
+}
+
+/* Estilização do rótulo na barra de ferramentas */
+.rbc-toolbar-label{
+    font-size: larger !important;
+}
+
+/* Barra de ferramentas no topo do calendário */
+
+/* Fundo dos eventos em vista mensal */
+.rbc-event-label{
+    background-color: #E11D48 !important;
+}
+
+/* Conteúdo dos eventos */
+.rbc-event-content{
+    background-color: #E11D48 !important;
+}
+
+/* Cor de fundo geral dos eventos */
+.rbc-event{
+    background-color: #E11D48 !important;
+}
+
+/* Indicador de hora atual */
+.rbc-current-time-indicator{
+    background-color: #000000 !important;
+}
+
+/* Eventos de dia inteiro */
+.rbc-event-allday{
+    background-color: #E11D48 !important;
+}
+
+/* Ajuste específico de posicionamento */
+.bottom-128 {
+    bottom: 46rem;
+}
+
