@@ -4,6 +4,7 @@ import { RootRoute } from "./layout/Layout";
 import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import AllAccountsPage from "./pages/AllAccountsPage";
+import BookingPage from "./pages/BookingPage";
 
 const indexRoute = createRoute({
     getParentRoute: () => RootRoute,
@@ -29,6 +30,12 @@ const allAccountsRoute = createRoute({
     component: AllAccountsPage,
 });
 
+const bookingRoute = createRoute({
+    getParentRoute: () => RootRoute,
+    path: "/booking",
+    component: BookingPage,
+});
 
-export const routeTree = RootRoute.addChildren([indexRoute, loginRoute, accountRoute, allAccountsRoute]);
+
+export const routeTree = RootRoute.addChildren([indexRoute, loginRoute, accountRoute, allAccountsRoute, bookingRoute]);
 
