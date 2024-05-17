@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Calendar } from 'react-big-calendar';
 import localizer from './localizer';
-import './Calendar.css'
+import '@/pages/BookingPage/components/css/Calendar.css';
 import { events } from '@/data/appointments';
 import { Appointment } from '@/utils/types';
 import EventDialog from './EventDialog';

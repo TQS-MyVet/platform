@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import AllAccountsPage from "./pages/AllAccountsPage";
 import BookingPage from "./pages/BookingPage";
+import QueuePage from "./pages/QueuePage";
 
 const indexRoute = createRoute({
     getParentRoute: () => RootRoute,
@@ -36,6 +37,12 @@ const bookingRoute = createRoute({
     component: BookingPage,
 });
 
+const queueRoute = createRoute({
+    getParentRoute: () => RootRoute,
+    path: "/queue",
+    component: QueuePage,
+});
 
-export const routeTree = RootRoute.addChildren([indexRoute, loginRoute, accountRoute, allAccountsRoute, bookingRoute]);
+
+export const routeTree = RootRoute.addChildren([indexRoute, loginRoute, accountRoute, allAccountsRoute, bookingRoute, queueRoute]);
 

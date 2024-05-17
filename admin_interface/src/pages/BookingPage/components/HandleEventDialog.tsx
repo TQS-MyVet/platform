@@ -30,8 +30,7 @@ import {
   } from "@/components/ui/select"
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import './DatePicker.css'
-import { events } from '@/data/appointments';
+import '@/pages/BookingPage/components/css/DatePicker.css'
 import { Appointment } from '@/utils/types';
 
 interface HandleEventDialogProps {
