@@ -43,7 +43,7 @@ export default function Apps() {
   const [searchTerm, setSearchTerm] = useState('')
   const [animals, setAnimals] = useState("allAnimals")
 
-  function renderAnimalButton(animal) {
+  function renderAnimalButton(animal: string) {
     let color;
     switch (animal) {
       case 'dog':
