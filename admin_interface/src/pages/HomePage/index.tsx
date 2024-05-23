@@ -2,17 +2,21 @@ import { Layout, LayoutBody } from '@/components/custom/layout';
 import { Separator } from '@/components/ui/separator';
 import {
   Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
 } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { homeCards } from '@/data/homeCards';
+import { homeCardsReceptionist, homeCardsDoctor } from '@/data/homeCards';
 
 import { Link } from '@tanstack/react-router';
 
-export default function HomePage() {
+interface HomePageProps {
+    userRole: 'doctor' | 'receptionist';
+}
+
+export default function HomePage({ userRole }: HomePageProps) {
+
+    userRole = 'doctor';
+
+    const homeCards = userRole === 'receptionist' ? homeCardsReceptionist : homeCardsDoctor;
+
     return (
         <Layout>
           <LayoutBody className='space-y-4'>
@@ -28,7 +32,7 @@ export default function HomePage() {
             </div>
             <Separator />
             <div className='grid gap-4 pt-4 md:grid-cols-1 xl:grid-cols-2'>
-                {homeCards.map((card, index) => (
+                {homeCards.slice(0, 2).map((card, index) => (
                     <Link key={index} to={card.link}>
                     <Card className='rounded-lg transition duration-500 ease-in-out transform hover:shadow-lg hover:brightness-75'>
                         <div className="relative flex w-full h-[355px] justify-center items-center">
@@ -47,6 +51,26 @@ export default function HomePage() {
                     </Link>
                 ))}
             </div>
+            {userRole === 'doctor' && (
+                <div className='grid gap-4 grid-cols-1'>
+                    <Link to={homeCardsDoctor[2].link}>
+                        <Card className='rounded-lg transition duration-300 ease-in-out transform hover:shadow-lg hover:brightness-75'>
+                            <div className="relative flex w-full h-[355px] justify-center items-center">
+                                <img
+                                    src={homeCardsDoctor[2].image}
+                                    alt="Record Appointment Results Background"
+                                    className="absolute inset-0 w-full rounded-lg brightness-50 border h-full object-cover"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="xs:text-5xl text-4xl lg:text-6xl font-bold text-white">
+                                      {homeCardsDoctor[2].title}
+                                    </span>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+                </div>
+            )}
           </LayoutBody>
         </Layout>
       );
