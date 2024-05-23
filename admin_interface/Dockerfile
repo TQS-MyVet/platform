@@ -2,11 +2,11 @@ FROM node:21-alpine
 
 WORKDIR /web_app
 
-COPY package.json package-lock.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn install --silent
+RUN npm install
 
 COPY . .
 
 EXPOSE 3000
-CMD yarn run dev 
+CMD npm run dev 
