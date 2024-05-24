@@ -89,6 +89,8 @@ export default function Apps() {
     .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter((app) => animals === 'allAnimals' || app.animals.includes(animals))
 
+  
+
   return (
     <Layout fadedBelow fixedHeight>
       {/* ===== Content ===== */}

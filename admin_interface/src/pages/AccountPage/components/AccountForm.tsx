@@ -33,6 +33,15 @@ import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/components/ui/use-toast"
+import { CreateUser, CreatePet } from '@/utils/types'
+
+//Query
+import { useMutation } from '@tanstack/react-query';
+import { UserService } from '@/services/Client/UserService'
+import { PetService } from '@/services/Client/PetService'
+
+//React 
+import { useEffect } from 'react'
 
 
 export function AccountForm() {
@@ -51,14 +60,84 @@ export function AccountForm() {
     }
   });
 
-  function onSubmit(data: any) {
-    toast({
-      variant: 'success',
-      title: 'Account Created!',
-      description: 'The account for the owner of the pet has been created successfully.',
-    });
-    console.log(data);
+  //Post User
+
+  const postUser = async (user: CreateUser) => {
+    return await UserService.postUser(user);
   }
+
+  const {mutate, data: userResponse} = useMutation({
+    mutationFn: postUser,
+    onError: (error) => {
+        console.log('Error: ', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error!',
+            description: 'An error occurred while creating the account for the owner of the pet.',
+        });
+
+    },
+    onSuccess: () => {
+        console.log('Sou Foda!');
+        toast({
+            variant: 'success',
+            title: 'Account Created!',
+            description: 'The account for the owner of the pet has been created successfully.',
+        });
+    }
+  })
+
+  function onSubmit(data: any) {
+
+    const user: CreateUser = {
+        name: data.ownerName,
+        email: data.email,
+        phone: data.phone,
+      };
+
+      mutate(user);
+    }
+
+    //Post Pet
+
+    const postPet = async (pet: CreatePet) => {
+        return await PetService.postPet('userId', pet);
+    }
+
+    const {mutate: mutatePet, data: petResponse} = useMutation({
+        mutationFn: postPet,
+        onError: (error) => {
+            console.log('Error: ', error);
+            toast({
+                variant: 'destructive',
+                title: 'Error!',
+                description: 'An error occurred while creating the pet.',
+            });
+    
+        },
+        onSuccess: () => {
+            console.log('Sou Foda!');
+            toast({
+                variant: 'success',
+                title: 'Pet Created!',
+                description: 'The pet has been created successfully.',
+            });
+        }
+      })
+
+    useEffect(() => {
+        if(userResponse){
+            const pet: CreatePet = {
+                name: form.getValues('petName'),
+                sex: form.getValues('petGenre'),
+                birthdate: form.getValues('petBirthdate').toISOString(),
+                species: form.getValues('petSpecies'),
+            }
+            mutatePet(pet);
+        }
+    }, [userResponse])
+
+
 
   return (
     <Form {...form}>

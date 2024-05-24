@@ -8,3 +8,16 @@ export interface Appointment{
     petName: string;
     title: string;
 }
+
+export interface CreateUser{
+    name: string;
+    email: string;
+    phone: string;
+}
+
+export interface CreatePet{
+    name: string;
+    sex: string;
+    birthdate: string;
+    species: string;
+}
