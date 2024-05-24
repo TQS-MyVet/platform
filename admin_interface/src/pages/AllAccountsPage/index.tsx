@@ -25,6 +25,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+//query
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { UserService } from '@/services/Client/UserService'
+import { User } from '@/utils/types'
+import { Dog } from 'lucide-react'
+
+
 
 const animalsText = new Map<string, string>([
   ['dog', 'Dog'],
@@ -43,53 +50,64 @@ export default function Apps() {
   const [searchTerm, setSearchTerm] = useState('')
   const [animals, setAnimals] = useState("allAnimals")
 
-  function renderAnimalButton(animal: string) {
-    let color;
-    switch (animal) {
-      case 'dog':
-        color = 'blue';
-        break;
-      case 'cat':
-        color = 'green';
-        break;
-      case 'bird':
-        color = 'yellow';
-        break;
-      case 'rabbit':
-        color = 'red';
-        break;
-      case 'rodent':
-        color = 'purple';
-        break;
-      case 'reptile':
-        color = 'indigo';
-        break;
-      default:
-        console.log('No animal found');
-        return null;
+  // const queryClient = useQueryClient();
+
+  // function renderAnimalButton(animal: string) {
+  //   let color;
+  //   switch (animal) {
+  //     case 'dog':
+  //       color = 'blue';
+  //       break;
+  //     case 'cat':
+  //       color = 'green';
+  //       break;
+  //     case 'bird':
+  //       color = 'yellow';
+  //       break;
+  //     case 'rabbit':
+  //       color = 'red';
+  //       break;
+  //     case 'rodent':
+  //       color = 'purple';
+  //       break;
+  //     case 'reptile':
+  //       color = 'indigo';
+  //       break;
+  //     default:
+  //       console.log('No animal found');
+  //       return null;
+  //   }
+  
+  //   return (
+  //     <Button
+  //       variant='outline'
+  //       size='sm'
+  //       className={`border mr-2 border-${color}-300 bg-${color}-50 hover:bg-${color}-100 dark:border-${color}-700 dark:bg-${color}-950 dark:hover:bg-${color}-900`}
+  //     >
+  //       {animalsText.get(animal)}
+  //     </Button>
+  //   );
+  // }
+
+  //Get all the accounts
+    const getUsers = async () => {
+      const response = await UserService.getUsers();
+      console.log(response.data);
+      return response.data;
     }
-  
-    return (
-      <Button
-        variant='outline'
-        size='sm'
-        className={`border mr-2 border-${color}-300 bg-${color}-50 hover:bg-${color}-100 dark:border-${color}-700 dark:bg-${color}-950 dark:hover:bg-${color}-900`}
-      >
-        {animalsText.get(animal)}
-      </Button>
-    );
-  }
 
-  const filteredApps = apps
-    .sort((a, b) =>
-      sort === 'ascending'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
-    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter((app) => animals === 'allAnimals' || app.animals.includes(animals))
+  const { data: users, isLoading, isSuccess } = useQuery<User[], Error>({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  });
 
-  
+  const filteredUsers = users
+  ?.sort((a, b) =>
+    sort === 'ascending'
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name)
+  )
+  .filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
   return (
     <Layout fadedBelow fixedHeight>
@@ -153,8 +171,8 @@ export default function Apps() {
         </div>
         <Separator className='shadow' />
         <div className='no-scrollbar grid gap-4 overflow-y-scroll pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
-          {filteredApps.map((app) => (
-            <Dialog key={app.name}>
+          {isSuccess && filteredUsers?.map((user) => (
+            <Dialog key={user.name}>
               <DialogTrigger>
                 <div
                   className='rounded-lg border p-4 hover:shadow-md'
@@ -163,23 +181,28 @@ export default function Apps() {
                     <div
                       className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}
                     >
-                      {app.logo}
+                      <Dog />
                     </div>
                     <div>
-                    {app.animals.map((animal) => renderAnimalButton(animal))}
+                      {/* {user.Pets.map((pet) => renderAnimalButton(pet.species))} */}
                     </div>
                   </div>
-                  <div className='flex justify-center flex-col'>
-                    <h2 className='mb-1 lg:text-start text-center font-semibold'>{app.name}</h2>
-                    <p className='line-clamp-2 lg:text-start text-center justify-start text-gray-500'>{app.desc}</p>
+                  <div className='flex flex-row items-center justify-between'>
+                    <div className='flex justify-center flex-col'>
+                      <h2 className='mb-1 text-start xl:text-start md:text-center font-semibold'>{user.name}</h2>
+                      <p className='line-clamp-2 lg:text-start text-center justify-start text-gray-500'>{user.email}</p>
+                    </div>
+                    <div>
+                      Tlm: <span className='font-semibold'>{user.phone}</span>
+                    </div>
                   </div>
                 </div>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>{app.name}</DialogTitle>
+                  <DialogTitle>{user.name}</DialogTitle>
                 </DialogHeader>
-                <DialogDescription>{app.desc}</DialogDescription>
+                <DialogDescription>{user.email}</DialogDescription>
               </DialogContent>
             </Dialog>
           ))}
