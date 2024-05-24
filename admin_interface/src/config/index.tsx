@@ -18,6 +18,9 @@ const config = {
     HOST,
     BASE_URL,
     API_USER_URL: `${BASE_URL}/api/users`,
+    API_PET_URL: `${BASE_URL}/api/pets`,
+    API_QUEUE_URL: `${BASE_URL}/api/queues`,
+    API_APPOINTMENT_URL: `${BASE_URL}/api/appointments`,
     STATIC_URL: `${BASE_URL}/`,
 };
 
