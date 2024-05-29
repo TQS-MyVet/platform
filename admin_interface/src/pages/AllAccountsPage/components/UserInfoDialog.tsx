@@ -8,7 +8,8 @@ import {
   import { Button } from '@/components/ui/button';
   import { User, CreatePet } from '@/utils/types';
   import { useMutation, useQueryClient } from '@tanstack/react-query';
-  import { UserService, PetService } from '@/services/Client/UserService';
+  import { UserService } from '@/services/Client/UserService';
+  import { PetService } from '@/services/Client/PetService';
   import { useState } from 'react';
   import {
     Accordion,

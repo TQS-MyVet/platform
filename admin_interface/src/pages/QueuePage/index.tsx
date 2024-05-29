@@ -9,15 +9,54 @@ import {
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import Ticket from '@/assets/ticket.png';
+import DoctorTicket from '@/assets/ticket-doctor.png';
+import { QueueService } from '@/services/Client/QueueService';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Queue } from '@/utils/types';
 
 export default function QueuePage() {
-  const [ticketNumber, setTicketNumber] = useState("P-0023");
+  const [userType, setUserType] = useState<'doctor' | 'receptionist'>('doctor'); // Simulate user type
 
-  const handleNext = () => {
-    const nextNumber = parseInt(ticketNumber.split('-')[1]) + 1;
-    const nextTicket = `P-${String(nextNumber).padStart(4, '0')}`;
-    setTicketNumber(nextTicket);
+  const queryClient = useQueryClient();
+
+  const getQueue = async () => {
+    const response = await QueueService.getQueues();
+    return response.data;
+  }
+
+  const { data: queues, isLoading } = useQuery<Queue[], Error>({
+    queryKey: ['queues'],
+    queryFn: getQueue,
+  });
+
+  const deleteFirstOfTheQueueReceptionist = useMutation({
+    mutationFn: QueueService.deleteFirstOfTheQueueReceptionist,
+    onSuccess: () => {
+      queryClient.invalidateQueries('queues');
+    }
+  });
+
+  const deleteFirstOfTheQueueDoctor = useMutation({
+    mutationFn: QueueService.deleteFirstOfTheQueueDoctor,
+    onSuccess: () => {
+      queryClient.invalidateQueries('queues');
+    }
+  });
+
+  const handleDeleteHead = (queueType: 'doctor' | 'receptionist') => {
+    if (queueType === 'doctor') {
+      deleteFirstOfTheQueueDoctor.mutate();
+    } else if (queueType === 'receptionist') {
+      deleteFirstOfTheQueueReceptionist.mutate();
+    }
   };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  const receptionistQueue = queues?.[0];
+  const doctorQueue = queues?.[1];
+  const headOfReceptionistQueue = receptionistQueue?.[0];
+  const headOfDoctorQueue = doctorQueue?.[0];
 
   return (
     <Layout>
@@ -28,36 +67,78 @@ export default function QueuePage() {
               Queue Management
             </h1>
             <p className='text-sm text-muted-foreground'>
-              Manage the queue of pets waiting to be seen by the vet. 
+              Manage the queue of pets waiting to be seen by the vet.
             </p>
           </div>
         </div>
         <Separator />
-        <div className='flex justify-center pt-32 p-1'>
+        <div className='xl:grid xl:grid-cols-2 flex flex-col justify-center items-center pt-32 p-1 gap-4'>
           <div className='w-full max-w-xl'>
             <Card>
               <CardHeader>
-              <div className="relative flex w-full h-48 justify-center items-center">
-                <img
-                    src={Ticket} // Substitua pela URL da sua imagem de ticket
+                <div className="relative flex w-full h-48 justify-center items-center">
+                  <img
+                    src={Ticket}
                     alt="Ticket"
                     className="absolute inset-0 w-[500px] h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center pr-14 sm:pr-20 lg:pr-24">
-                    <span className="xs:text-5xl text-4xl lg:text-6xl font-bold text-white">
-                    {ticketNumber}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center pr-14 sm:pr-20 lg:pr-24">
+                    <span className="xs:text-5xl text-4xl font-bold text-white">
+                      {headOfReceptionistQueue ? `P-${headOfReceptionistQueue.userId.toString().padStart(4, '0')}` : 'No Queue'}
                     </span>
-                </div>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className='text-center text-lg'>
-                  Current Ticket Number
+                  Current Ticket Number: {headOfReceptionistQueue ? headOfReceptionistQueue.userId : 'No Queue'}
+                </p>
+                <p className='text-center text-lg'>
+                  Queue Position: {headOfReceptionistQueue ? headOfReceptionistQueue.queuePos : 'N/A'}
                 </p>
               </CardContent>
-              <CardFooter className='flex justify-center'>
-                <Button onClick={handleNext} className='px-4 py-2 text-lg'>
-                  Next
+              <CardFooter className='flex justify-center space-x-4'>
+                <Button
+                  onClick={() => handleDeleteHead('receptionist')}
+                  className='px-4 py-2 text-lg'
+                  disabled={userType !== 'receptionist'}
+                >
+                  Next in Receptionist Queue
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+          <div className='w-full max-w-xl'>
+            <Card>
+              <CardHeader>
+                <div className="relative flex w-full h-48 justify-center items-center">
+                  <img
+                    src={DoctorTicket} 
+                    alt="Ticket"
+                    className="absolute inset-0 w-[500px] h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center pr-14 sm:pr-20 lg:pr-24">
+                    <span className="xs:text-5xl text-4xl font-bold text-white">
+                      {headOfDoctorQueue ? `P-${headOfDoctorQueue.userId.toString().padStart(4, '0')}` : 'No Queue'}
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className='text-center text-lg'>
+                  Current Ticket Number: {headOfDoctorQueue ? headOfDoctorQueue.userId : 'No Queue'}
+                </p>
+                <p className='text-center text-lg'>
+                  Queue Position: {headOfDoctorQueue ? headOfDoctorQueue.queuePos : 'N/A'}
+                </p>
+              </CardContent>
+              <CardFooter className='flex justify-center space-x-4'>
+                <Button
+                  onClick={() => handleDeleteHead('doctor')}
+                  className='px-4 bg-custom-yellow hover:bg-amber-400 py-2 text-lg'
+                  disabled={userType !== 'doctor'}
+                >
+                  Next in Doctor Queue
                 </Button>
               </CardFooter>
             </Card>

@@ -1,37 +1,19 @@
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-  } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription} from "@/components/ui/dialog";
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '@/components/ui/form'
 import { appointmentSchema, AppointmentFormValues } from './schema';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import '@/pages/BookingPage/components/css/DatePicker.css'
-import { Appointment } from '@/utils/types';
+import { Appointment, User } from '@/utils/types';
+import { UserService } from '@/services/Client/UserService';
+import { useQuery } from '@tanstack/react-query';
+
 
 interface HandleEventDialogProps {
     isOpen: boolean;
@@ -43,7 +25,7 @@ interface HandleEventDialogProps {
 
 export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, setSavedEvents, savedEvents } : HandleEventDialogProps) { 
 
-    const { toast } = useToast();
+    // const { toast } = useToast();
 
     const form = useForm<AppointmentFormValues>({
         resolver: zodResolver(appointmentSchema),
@@ -51,8 +33,7 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
             title: '',
             type: '',
             doctor: '',
-            owner: '',
-            petName: '',
+            owner: Object.assign({}),
             start: selectedDates[0],
             estimatedDuration: '',
         }
@@ -63,13 +44,24 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         setIsOpen(false);
     };
 
+    // Get all the accounts
+    const getUsers = async () => {
+        const response = await UserService.getUsers();
+        console.log(response.data);
+        return response.data;
+    };
+
+    const { data: users, isLoading} = useQuery<User[], Error>({
+        queryKey: ['users'],
+        queryFn: getUsers,
+    });
+
     function onAppoitmentSubmit(data: any){
-        console.log(data);
+
         const estimatedDuration = data.estimatedDuration.split(':');
         const estimatedDurationInMinutes = parseInt(estimatedDuration[0]) * 60 + parseInt(estimatedDuration[1]);
         const endDate = new Date(data.start);
         endDate.setMinutes(endDate.getMinutes() + estimatedDurationInMinutes);
-        console.log(endDate);
 
         //add event to the list of events
         const newEvent = {
@@ -81,6 +73,9 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
             start: data.start,
             end: endDate,
         };
+
+        console.log(newEvent);
+
         setIsOpen(false);
         setSavedEvents([...savedEvents, newEvent]);
         
@@ -97,6 +92,8 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         maxTime.setHours(23, 59, 59, 999);
         return maxTime;
     };
+
+    if(isLoading) return <div>Loading...</div>;
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -157,18 +154,19 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
                                     <FormItem>
                                         <FormLabel className='text-black'>Owner</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='John Doe' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                            </div>
-                            <div className="grid grid-cols-3 gap-4">
-                                <FormField control={form.control} name='petName' render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='text-black'>Pet Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='Rex' {...field} />
+                                            <Select onValueChange={(value) => {
+                                                    const selectedUser = users?.find(user => user.id.toString() === value);
+                                                    field.onChange(selectedUser);
+                                                }}>                                                
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder='Owner' />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {users?.map(user => (
+                                                        <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -212,7 +210,7 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
                                 )} />
                             </div>
                             <div className='flex pt-4 justify-around'>
-                                <Button type='submit'>Adicionar</Button>
+                                <Button type='submit'>Submit</Button>
                                 <Button variant={'outline'} onClick={handleClose}>Cancelar</Button>
                             </div>
                         </form>
