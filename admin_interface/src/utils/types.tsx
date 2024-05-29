@@ -39,3 +39,9 @@ export interface Pet {
     species: string;
     UserId: number;
 }
+
+export interface Queue {
+    userId: number;
+    queueType: string;
+    queuePos: number;
+}

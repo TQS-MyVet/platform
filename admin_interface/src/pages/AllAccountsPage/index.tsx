@@ -22,7 +22,6 @@ import { User } from '@/utils/types';
 import { Dog } from 'lucide-react';
 import UserInfoDialog from './components/UserInfoDialog';
 import EditUserDialog from './components/EditUserDialog';
-import { DiamondPlus } from 'lucide-react';
 
 
 const animalsText = new Map<string, string>([
@@ -51,7 +50,7 @@ export default function Apps() {
     return response.data;
   };
 
-  const { data: users, isLoading, isSuccess } = useQuery<User[], Error>({
+  const { data: users, isSuccess } = useQuery<User[], Error>({
     queryKey: ['users'],
     queryFn: getUsers,
   });
@@ -63,7 +62,7 @@ export default function Apps() {
         : b.name.localeCompare(a.name)
     )
     .filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter((user) => animals === 'allAnimals' || (user.Pets && user.Pets.some((pet) => pet.species === animals)));
+    .filter((user) => animals === 'allAnimals' || (user.pets && user.pets.some((pet) => pet.species === animals)));
 
   const handleOpenDialog = (user: User) => {
     setSelectedUser(user);
