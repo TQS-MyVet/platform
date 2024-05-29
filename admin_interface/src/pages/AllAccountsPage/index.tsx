@@ -1,36 +1,28 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   IconAdjustmentsHorizontal,
   IconSortAscendingLetters,
   IconSortDescendingLetters,
-} from '@tabler/icons-react'
-import { Layout, LayoutBody} from '@/components/custom/layout'
-import { Input } from '@/components/ui/input'
+} from '@tabler/icons-react';
+import { Layout, LayoutBody } from '@/components/custom/layout';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Button } from '@/components/custom/button'
-import { apps } from '@/data/accounts'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
-//query
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { UserService } from '@/services/Client/UserService'
-import { User } from '@/utils/types'
-import { Dog } from 'lucide-react'
-
+// query
+import { useQuery } from '@tanstack/react-query';
+import { UserService } from '@/services/Client/UserService';
+import { User } from '@/utils/types';
+import { Dog } from 'lucide-react';
+import UserInfoDialog from './components/UserInfoDialog';
+import EditUserDialog from './components/EditUserDialog';
+import { DiamondPlus } from 'lucide-react';
 
 
 const animalsText = new Map<string, string>([
@@ -42,59 +34,22 @@ const animalsText = new Map<string, string>([
   ['reptile', 'Reptile'],
   ['allAnimals', 'All Animals'],
   ['snail', 'Snail'],
-])
-
+]);
 
 export default function Apps() {
-  const [sort, setSort] = useState('ascending')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [animals, setAnimals] = useState("allAnimals")
+  const [sort, setSort] = useState('ascending');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [animals, setAnimals] = useState('allAnimals');
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // const queryClient = useQueryClient();
-
-  // function renderAnimalButton(animal: string) {
-  //   let color;
-  //   switch (animal) {
-  //     case 'dog':
-  //       color = 'blue';
-  //       break;
-  //     case 'cat':
-  //       color = 'green';
-  //       break;
-  //     case 'bird':
-  //       color = 'yellow';
-  //       break;
-  //     case 'rabbit':
-  //       color = 'red';
-  //       break;
-  //     case 'rodent':
-  //       color = 'purple';
-  //       break;
-  //     case 'reptile':
-  //       color = 'indigo';
-  //       break;
-  //     default:
-  //       console.log('No animal found');
-  //       return null;
-  //   }
-  
-  //   return (
-  //     <Button
-  //       variant='outline'
-  //       size='sm'
-  //       className={`border mr-2 border-${color}-300 bg-${color}-50 hover:bg-${color}-100 dark:border-${color}-700 dark:bg-${color}-950 dark:hover:bg-${color}-900`}
-  //     >
-  //       {animalsText.get(animal)}
-  //     </Button>
-  //   );
-  // }
-
-  //Get all the accounts
-    const getUsers = async () => {
-      const response = await UserService.getUsers();
-      console.log(response.data);
-      return response.data;
-    }
+  // Get all the accounts
+  const getUsers = async () => {
+    const response = await UserService.getUsers();
+    console.log(response.data);
+    return response.data;
+  };
 
   const { data: users, isLoading, isSuccess } = useQuery<User[], Error>({
     queryKey: ['users'],
@@ -102,12 +57,32 @@ export default function Apps() {
   });
 
   const filteredUsers = users
-  ?.sort((a, b) =>
-    sort === 'ascending'
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name)
-  )
-  .filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    ?.sort((a, b) =>
+      sort === 'ascending'
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name)
+    )
+    .filter((user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((user) => animals === 'allAnimals' || (user.Pets && user.Pets.some((pet) => pet.species === animals)));
+
+  const handleOpenDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsInfoDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedUser(null);
+    setIsInfoDialogOpen(false);
+  };
+
+  const handleOpenEditDialog = () => {
+    setIsEditDialogOpen(true);
+    setIsInfoDialogOpen(false); // Fecha o diálogo de informações
+  };
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+  };
 
   return (
     <Layout fadedBelow fixedHeight>
@@ -170,44 +145,45 @@ export default function Apps() {
           </Select>
         </div>
         <Separator className='shadow' />
-        <div className='no-scrollbar grid gap-4 overflow-y-scroll pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
+        <div className='no-scrollbar grid gap-4 overflow-y-scroll pb-16 pr-4 pt-4 md:grid-cols-2 lg:grid-cols-3'>
           {isSuccess && filteredUsers?.map((user) => (
-            <Dialog key={user.name}>
-              <DialogTrigger>
-                <div
-                  className='rounded-lg border p-4 hover:shadow-md'
-                >
-                  <div className='mb-8 flex items-center justify-between'>
-                    <div
-                      className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}
-                    >
-                      <Dog />
-                    </div>
-                    <div>
-                      {/* {user.Pets.map((pet) => renderAnimalButton(pet.species))} */}
-                    </div>
-                  </div>
-                  <div className='flex flex-row items-center justify-between'>
-                    <div className='flex justify-center flex-col'>
-                      <h2 className='mb-1 text-start xl:text-start md:text-center font-semibold'>{user.name}</h2>
-                      <p className='line-clamp-2 lg:text-start text-center justify-start text-gray-500'>{user.email}</p>
-                    </div>
-                    <div>
-                      Tlm: <span className='font-semibold'>{user.phone}</span>
-                    </div>
-                  </div>
+            <div key={user.id} className='rounded-lg border p-4 hover:shadow-md' onClick={() => handleOpenDialog(user)}>
+              <div className='mb-8 flex items-center justify-between'>
+                <div className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}>
+                  <Dog />
                 </div>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{user.name}</DialogTitle>
-                </DialogHeader>
-                <DialogDescription>{user.email}</DialogDescription>
-              </DialogContent>
-            </Dialog>
+                <div>
+                  {/* {user.Pets.map((pet) => renderAnimalButton(pet.species))} */}
+                </div>
+              </div>
+              <div className='flex flex-row items-center justify-between'>
+                <div className='flex justify-center flex-col'>
+                  <h2 className='mb-1 text-start xl:text-start md:text-center font-semibold'>{user.name}</h2>
+                  <p className='line-clamp-2 lg:text-start text-center justify-start text-gray-500'>{user.email}</p>
+                </div>
+                <div>
+                  Tlm: <span className='font-semibold'>{user.phone}</span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </LayoutBody>
+      {selectedUser && (
+        <>
+          <UserInfoDialog
+            account={selectedUser}
+            isInfoDialogOpen={isInfoDialogOpen}
+            setIsInfoDialogOpen={handleCloseDialog}
+            openEditDialog={handleOpenEditDialog} // Passa a função para abrir o EditUserDialog
+          />
+          <EditUserDialog
+            user={selectedUser}
+            isOpen={isEditDialogOpen}
+            setIsOpen={handleCloseEditDialog}
+          />
+        </>
+      )}
     </Layout>
-  )
+  );
 }

@@ -28,7 +28,7 @@ export interface User {
     email: string;
     phone: string;
     roles: string[];
-    Pets: Pet[];
+    pets: Pet[];
 }
 
 export interface Pet {

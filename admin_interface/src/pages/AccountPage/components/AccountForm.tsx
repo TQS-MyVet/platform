@@ -78,7 +78,6 @@ export function AccountForm() {
 
     },
     onSuccess: () => {
-        console.log('Sou Foda!');
         toast({
             variant: 'success',
             title: 'Account Created!',
