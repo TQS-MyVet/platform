@@ -15,7 +15,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Queue } from '@/utils/types';
 
 export default function QueuePage() {
-  const [userType, setUserType] = useState<'doctor' | 'receptionist'>('doctor'); // Simulate user type
+  const [userType, setUserType] = useState<'doctor' | 'receptionist'>('receptionist'); // Simulate user type
 
   const queryClient = useQueryClient();
 
@@ -72,7 +72,7 @@ export default function QueuePage() {
           </div>
         </div>
         <Separator />
-        <div className='xl:grid xl:grid-cols-2 flex flex-col justify-center items-center pt-32 p-1 gap-4'>
+        <div className='flex xl:flex-row flex-col justify-center items-center pt-32 p-1 gap-12'>
           <div className='w-full max-w-xl'>
             <Card>
               <CardHeader>
@@ -91,7 +91,7 @@ export default function QueuePage() {
               </CardHeader>
               <CardContent>
                 <p className='text-center text-lg'>
-                  Current Ticket Number: {headOfReceptionistQueue ? headOfReceptionistQueue.userId : 'No Queue'}
+                  Current User ID: {headOfReceptionistQueue ? headOfReceptionistQueue.userId : 'No Queue'}
                 </p>
                 <p className='text-center text-lg'>
                   Queue Position: {headOfReceptionistQueue ? headOfReceptionistQueue.queuePos : 'N/A'}
@@ -126,7 +126,7 @@ export default function QueuePage() {
               </CardHeader>
               <CardContent>
                 <p className='text-center text-lg'>
-                  Current Ticket Number: {headOfDoctorQueue ? headOfDoctorQueue.userId : 'No Queue'}
+                  Current User Id: {headOfDoctorQueue ? headOfDoctorQueue.userId : 'No Queue'}
                 </p>
                 <p className='text-center text-lg'>
                   Queue Position: {headOfDoctorQueue ? headOfDoctorQueue.queuePos : 'N/A'}
