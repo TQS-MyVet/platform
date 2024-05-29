@@ -78,7 +78,6 @@ export function AccountForm() {
 
     },
     onSuccess: () => {
-        console.log('Sou Foda!');
         toast({
             variant: 'success',
             title: 'Account Created!',
@@ -104,7 +103,7 @@ export function AccountForm() {
         return await PetService.postPet('userId', pet);
     }
 
-    const {mutate: mutatePet, data: petResponse} = useMutation({
+    const {mutate: mutatePet} = useMutation({
         mutationFn: postPet,
         onError: (error) => {
             console.log('Error: ', error);

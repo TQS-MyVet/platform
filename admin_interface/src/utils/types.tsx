@@ -21,3 +21,21 @@ export interface CreatePet{
     birthdate: string;
     species: string;
 }
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    roles: string[];
+    pets: Pet[];
+}
+
+export interface Pet {
+    id: number;
+    name: string;
+    sex: string;
+    birthdate: string;
+    species: string;
+    UserId: number;
+}
