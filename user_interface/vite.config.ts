@@ -11,5 +11,9 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    hmr: {
+      protocol: "ws",
+      clientPort: 3001,
+    },
   }
 })
