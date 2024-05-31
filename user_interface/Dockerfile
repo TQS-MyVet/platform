@@ -1,12 +1,12 @@
-FROM node:21-alpine
+FROM node:21
 
 WORKDIR /web_app
 
 COPY package.json package-lock.json ./
 
-RUN npm install --silent
+RUN npm install
 
 COPY . .
 
-EXPOSE 3001
-CMD npm run dev
+EXPOSE 3000
+CMD npm run dev -- --host 0.0.0.0

@@ -10,11 +10,32 @@ import {
   History,
   Menu,
   X,
+  ChevronDown,
+  ChevronUp,  
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const services = [
+  { value: 'Clinical analysis', label: 'Clinical analysis' },
+  { value: 'Anesthesia/Analgesia', label: 'Anesthesia/Analgesia' },
+  { value: 'Soft Tissue Surgery', label: 'Soft Tissue Surgery' },
+  { value: 'Orthopedic Surgery', label: 'Orthopedic Surgery' },
+  { value: 'Dental Surgery', label: 'Dental Surgery' },
+  { value: 'Vaccination', label: 'Vaccination' },
+  { value: 'Consultation', label: 'Consultation' },
+  { value: 'other', label: 'Other' },
+];
 
 function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
 
   // Determine if the current path is the homepage
   const isHomePage = location.pathname === '/';
@@ -49,13 +70,26 @@ function NavBar() {
                   <Clock size={20} className="mr-2 md:block hidden" />
                   Queues & Wait Times
                 </Link>
-                <Link
-                  to="/patient-center"
-                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
-                >
-                  <Briefcase size={20} className="mr-2 md:block hidden" />
-                  Services
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
+                    >
+                      <Briefcase size={20} className="mr-2 md:block hidden" />
+                      Services
+
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {services.map(service => (
+                      <DropdownMenuItem key={service.value} className='hover:bg-primary hover:text-white px-3 py-2'>
+                        <Link to={`/services/${service.value}`}>
+                          {service.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Link
                   to="/history"
                   className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
@@ -104,14 +138,25 @@ function NavBar() {
               <Clock size={20} className="mr-2" />
               Queues & Wait Times
             </Link>
-            <Link
-              to="/patient-center"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Briefcase size={20} className="mr-2" />
-              Services
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                >
+                  <Briefcase size={20} className="mr-2" />
+                  Services
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {services.map(service => (
+                  <DropdownMenuItem key={service.value} asChild>
+                    <Link to={`/services/${service.value}`}>
+                      {service.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link
               to="/history"
               className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
