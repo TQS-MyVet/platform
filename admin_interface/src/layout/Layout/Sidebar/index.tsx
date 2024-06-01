@@ -78,9 +78,6 @@ export default function Sidebar2({
                     <span className='font-medium'>Ana Júlia</span>
                     <span className='text-xs'>Receptionist 2</span>
                 </div>
-                <div className={`flex translate-x-8 ${isCollapsed ? 'invisible w-0' : 'visible w-auto'}`}>
-                    <ModeToggle />
-                </div>
             </div>
 
           {/* Toggle Button in mobile */}

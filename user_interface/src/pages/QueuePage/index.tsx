@@ -27,28 +27,6 @@ export default function QueuePage() {
     queryFn: getQueue,
   });
 
-  const deleteFirstOfTheQueueReceptionist = useMutation({
-    mutationFn: QueueService.deleteFirstOfTheQueueReceptionist,
-    onSuccess: () => {
-      queryClient.invalidateQueries('queues');
-    }
-  });
-
-  const deleteFirstOfTheQueueDoctor = useMutation({
-    mutationFn: QueueService.deleteFirstOfTheQueueDoctor,
-    onSuccess: () => {
-      queryClient.invalidateQueries('queues');
-    }
-  });
-
-  const handleDeleteHead = (queueType: 'doctor' | 'receptionist') => {
-    if (queueType === 'doctor') {
-      deleteFirstOfTheQueueDoctor.mutate();
-    } else if (queueType === 'receptionist') {
-      deleteFirstOfTheQueueReceptionist.mutate();
-    }
-  };
-
   if (isLoading) return <div>Loading...</div>;
 
   const receptionistQueue = queues?.[0];
