@@ -25,7 +25,7 @@ const App = () => {
         <StrictMode>
             <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
               <QueryClientProvider client={queryClient}>
-                  <RouterProvider router={router} />
+                  <RouterProvider basepath='/user' router={router} />
                   <Toaster />
               </QueryClientProvider>
             </ThemeProvider>

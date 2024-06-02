@@ -15,5 +15,6 @@ export default defineConfig({
       protocol: "ws",
       clientPort: 3001,
     },
-  }
+  },
+  base: "/user/",
 })
