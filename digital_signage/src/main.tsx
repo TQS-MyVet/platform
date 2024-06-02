@@ -4,9 +4,6 @@ import App from './App';
 
 import './index.css';
 
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-
-
 const container = document.getElementById('root');
 
 if (!container) {
