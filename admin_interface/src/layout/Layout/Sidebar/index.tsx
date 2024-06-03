@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { IconChevronsLeft, IconMenu2, IconX } from '@tabler/icons-react'
+import { IconChevronsLeft, IconMenu2, IconX, IconLogout } from '@tabler/icons-react'
 import { Layout, LayoutHeader } from '@/components/custom/layout'
 import { Button } from '@/components/custom/button'
 import Nav from './components/nav'
@@ -8,7 +8,8 @@ import { sidelinks } from '@/data/sidelinks'
 import LogoRed from '@/assets/Logo Red Larger (WB).png'
 import LogoRedWhite from '@/assets/Logo Red White.png'
 import { useTheme } from '@/components/theme-provider'
-import { ModeToggle } from '@/components/mode-toggle'
+import { useUserStore } from '@/stores/useUserStore'
+import { useToast } from '@/components/ui/use-toast'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean
@@ -21,6 +22,18 @@ export default function Sidebar2({
   setIsCollapsed,
 }: Readonly<SidebarProps>) {
   const [navOpened, setNavOpened] = useState(false)
+
+  const user = useUserStore()
+  const { toast } = useToast()
+
+  const handleLogout = () => {
+    user.logout()
+    toast({
+      variant: 'success',
+      title: 'Logout successful',
+      description: 'You have been successfully logged out',
+    })
+  }
 
   //verifica se esta em light ou dark mode
     const { theme } = useTheme()
@@ -75,9 +88,22 @@ export default function Sidebar2({
                 <div
                 className={`flex flex-col justify-end truncate ${isCollapsed ? 'invisible w-0' : 'visible w-auto'}`}
                 >
-                    <span className='font-medium'>Ana Júlia</span>
-                    <span className='text-xs'>Receptionist 2</span>
+                    <span className='font-medium'>{user.token ? user.name : 'Admin Interface'}</span>
+                    <span className='text-xs'>
+                    {user.token ? user.email : 'Doctor and Receptionist Interface'}
+                    </span>
                 </div>
+                {user.token && (
+                    <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label='Logout'
+                    className='pl-4'
+                    onClick={() => handleLogout()}
+                    >
+                    <IconLogout size={18} />
+                    </Button>
+                )}
             </div>
 
           {/* Toggle Button in mobile */}
