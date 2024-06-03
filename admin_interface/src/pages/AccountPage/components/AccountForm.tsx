@@ -126,7 +126,7 @@ export function AccountForm() {
 
     useEffect(() => {
         if(userResponse){
-            const pet: CreatePet = {
+            const pet: any = {
                 name: form.getValues('petName'),
                 sex: form.getValues('petGenre'),
                 birthdate: form.getValues('petBirthdate').toISOString(),

@@ -57,6 +57,7 @@ import { useForm } from 'react-hook-form'
     setIsInfoDialogOpen: (isOpen: boolean) => void;
     openEditDialog: () => void; // Passa a função para abrir o EditUserDialog
   }
+
   
   const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ account, isInfoDialogOpen, setIsInfoDialogOpen, openEditDialog }) => {
     const queryClient = useQueryClient();
@@ -92,7 +93,13 @@ import { useForm } from 'react-hook-form'
 
     //add pet
     const postPet = async (pet: CreatePet) => {
-        return await PetService.postPet('userId', pet);
+
+      const postPet = {
+        ...pet,
+        birthdate: pet.birthdate.toISOString(),
+      };
+      
+      return await PetService.postPet('userId', postPet);
     }
 
     const {mutate: mutatePet} = useMutation({
@@ -116,10 +123,10 @@ import { useForm } from 'react-hook-form'
         }
       })
   
-    const handleSavePet = async (data: AddPetFormValues) => {
+    const handleSavePet = async (data: CreatePet) => {
       setIsAddingPet(false);
       console.log(data);
-    //   mutatePet(data);
+      mutatePet(data);
     };
   
     return (
