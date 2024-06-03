@@ -9,6 +9,38 @@ export interface Appointment{
     title: string;
 }
 
+export interface CalendarAppointments{
+    id: number;
+    start: Date;
+    end: Date;
+    type: string;
+    doctor: User;
+    pet: Pet;
+    title: string;
+    docNotes: string;
+}
+
+export interface GetAppointment{
+    id: number;
+    startDate: string;
+    endDate: string;
+    type: string;
+    doctor: User;
+    docNotes: string;
+    pet: Pet;
+    title: string;
+}
+
+export interface PostAppointment{
+    title: string;
+    type: string;
+    doctorId: number;
+    petId: number;
+    startDate: string;
+    endDate: string;
+    docNotes: string;
+}
+
 export interface CreateUser{
     name: string;
     email: string;
@@ -45,7 +77,7 @@ export interface Pet {
     sex: string;
     birthdate: string;
     species: string;
-    userId: number;
+    userId?: number;
 }
 
 export interface Queue {
