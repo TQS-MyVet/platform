@@ -33,7 +33,7 @@ import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/components/ui/use-toast"
-import { CreateUser, CreatePet } from '@/utils/types'
+import { CreateUser, CreatePet, PostPet } from '@/utils/types'
 
 //Query
 import { useMutation } from '@tanstack/react-query';
@@ -86,21 +86,10 @@ export function AccountForm() {
     }
   })
 
-  function onSubmit(data: any) {
-
-    const user: CreateUser = {
-        name: data.ownerName,
-        email: data.email,
-        phone: data.phone,
-      };
-
-      mutate(user);
-    }
-
     //Post Pet
 
-    const postPet = async (pet: CreatePet) => {
-        return await PetService.postPet('userId', pet);
+    const postPet = async (pet: PostPet) => {
+        return await PetService.postPet(pet);
     }
 
     const {mutate: mutatePet} = useMutation({
@@ -115,7 +104,6 @@ export function AccountForm() {
     
         },
         onSuccess: () => {
-            console.log('Sou Foda!');
             toast({
                 variant: 'success',
                 title: 'Pet Created!',
@@ -124,18 +112,29 @@ export function AccountForm() {
         }
       })
 
+    function onSubmit(data: any) {
+
+        const user: CreateUser = {
+            name: data.ownerName,
+            email: data.email,
+            phone: data.phone,
+          };
+    
+          mutate(user);
+    }
+
     useEffect(() => {
-        if(userResponse){
-            const pet: any = {
+        if(userResponse) {
+            const pet: PostPet = {
                 name: form.getValues('petName'),
                 sex: form.getValues('petGenre'),
-                birthdate: form.getValues('petBirthdate').toISOString(),
                 species: form.getValues('petSpecies'),
+                birthdate: form.getValues('petBirthdate').toISOString(),
+                userId: userResponse?.data.id,
             }
             mutatePet(pet);
         }
     }, [userResponse])
-
 
 
   return (

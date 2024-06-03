@@ -9,8 +9,8 @@ const PetService = {
         return await client.get('/');
     },
 
-    async postPet(userId: string, data: any) {
-        return await client.post(`/${userId}`, data);
+    async postPet(data: any) {
+        return await client.post('', data);
     },
 
     async getPetById(petId: string) {

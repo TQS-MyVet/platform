@@ -6,8 +6,8 @@ import {
     DialogPortal,
   } from '@/components/ui/dialog';
   import { Button } from '@/components/ui/button';
-  import { User, CreatePet } from '@/utils/types';
-  import { useMutation, useQueryClient } from '@tanstack/react-query';
+  import { User, PostPet, CreatePet } from '@/utils/types';
+  import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
   import { UserService } from '@/services/Client/UserService';
   import { PetService } from '@/services/Client/PetService';
   import { useState } from 'react';
@@ -33,7 +33,6 @@ import {
   import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -91,15 +90,20 @@ import { useForm } from 'react-hook-form'
       setIsAddingPet(!isAddingPet);
     };
 
-    //add pet
-    const postPet = async (pet: CreatePet) => {
+    //get pets from user
+    const getPets = async () => {
+        return await UserService.getUserPets(account.id.toString());
+    }
 
-      const postPet = {
-        ...pet,
-        birthdate: pet.birthdate.toISOString(),
-      };
-      
-      return await PetService.postPet('userId', postPet);
+    const {data: pets} = useQuery({
+        queryKey: ['pets', account.id],
+        queryFn: getPets,
+    });
+
+    console.log(pets);
+
+    const postPet = async (pet: PostPet) => {
+      return await PetService.postPet(pet);
     }
 
     const {mutate: mutatePet} = useMutation({
@@ -111,22 +115,30 @@ import { useForm } from 'react-hook-form'
                 title: 'Error!',
                 description: 'An error occurred while creating the pet.',
             });
-    
-        },
+  
+      },
         onSuccess: () => {
-            console.log('Sou Foda!');
             toast({
                 variant: 'success',
                 title: 'Pet Created!',
                 description: 'The pet has been created successfully.',
             });
-        }
-      })
-  
+            queryClient.invalidateQueries('pets');
+          }
+    })
+
     const handleSavePet = async (data: CreatePet) => {
       setIsAddingPet(false);
       console.log(data);
-      mutatePet(data);
+      const pet: PostPet = {
+          name: data.name,
+          sex: data.sex,
+          birthdate: data.birthdate.toISOString(),
+          species: data.species,
+          userId: account.id,
+      };
+
+      mutatePet(pet);
     };
   
     return (
@@ -146,11 +158,11 @@ import { useForm } from 'react-hook-form'
               <Separator className="mt-4 shadow" />
               {account.pets.length > 0 ? (
                 <Accordion type='single' collapsible className='w-full'>
-                  {account.pets.map((pet) => (
-                    <AccordionItem value={pet.id.toLocaleString()} key={pet.id}>
+                  {pets?.data.map((pet : PostPet) => (
+                    <AccordionItem value={pet.id} key={pet.id}>
                       <AccordionTrigger className="flex justify-between px-4 py-2">
-                        <span>{pet.name}</span>
-                        <span>{pet.species}</span>
+                        <span className='font-bold text-gray-700'>{pet.name}</span>
+                        <span>Species: {pet.species.charAt(0).toUpperCase() + pet.species.slice(1)}</span>
                       </AccordionTrigger>
                       <AccordionContent className="px-4 py-2">
                         <div><strong className="text-gray font-semibold text-sm">Name:</strong> {pet.name}</div>

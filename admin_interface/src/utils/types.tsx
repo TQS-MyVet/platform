@@ -22,6 +22,14 @@ export interface CreatePet{
     species: string;
 }
 
+export interface PostPet{
+    name: string
+    sex: string
+    birthdate: string
+    species: string
+    userId: number
+}
+
 export interface User {
     id: number;
     name: string;

@@ -151,8 +151,16 @@ export default function Apps() {
                 <div className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}>
                   <Dog />
                 </div>
-                <div>
-                  {/* {user.Pets.map((pet) => renderAnimalButton(pet.species))} */}
+                <div className='overflow-x-auto flex space-x-2'>
+                {user.pets && user.pets.slice(0, 2).map((pet) => (
+                  <div key={pet.id} className='flex border p-2 rounded-lg gap-2'>
+                    <span className='text-muted-foreground'>{pet.name}</span>
+                    <span className='text-muted-foreground'>({pet.species})</span>
+                  </div>
+                ))}
+                {user.pets && user.pets.length > 2 && (
+                  <div className='text-muted-foreground items-center pt-1'>...</div>
+                )}
                 </div>
               </div>
               <div className='flex flex-row items-center justify-between'>

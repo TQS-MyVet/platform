@@ -4,7 +4,7 @@ import { Layout, LayoutHeader } from '@/components/custom/layout'
 import { Button } from '@/components/custom/button'
 import Nav from './components/nav'
 import { cn } from '@/lib/utils'
-import { sidelinks } from '@/data/sidelinks'
+import { getFilteredLinks } from '@/data/sidelinks'
 import LogoRed from '@/assets/Logo Red Larger (WB).png'
 import LogoRedWhite from '@/assets/Logo Red White.png'
 import { useTheme } from '@/components/theme-provider'
@@ -27,6 +27,7 @@ export default function Sidebar2({
   const user = useUserStore()
   const { toast } = useToast()
   const navigate = useNavigate()
+  const token = user.token // Acessa o token do usuário
 
   const handleLogout = () => {
     user.logout()
@@ -50,6 +51,9 @@ export default function Sidebar2({
     }
   }, [navOpened])
 
+  // Obtém os links filtrados
+  const filteredLinks = getFilteredLinks(user.roles, token)
+
   return (
     <aside
       className={cn(
@@ -61,9 +65,9 @@ export default function Sidebar2({
       <div
         onClick={() => setNavOpened(false)}
         className={`absolute inset-0 transition-[opacity] delay-100 duration-700 ${navOpened ? 'h-svh opacity-50' : 'h-0 opacity-0'} w-full bg-black md:hidden`}
-        role="button" // Add role="button"
-        tabIndex={0} // Make it focusable
-        onKeyDown={(event) => { // Use onKeyDown instead of onKeyPress
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             setNavOpened(false)
           }
@@ -129,7 +133,7 @@ export default function Sidebar2({
           className={`h-full flex-1 overflow-auto ${navOpened ? 'max-h-screen' : 'max-h-0 py-0 md:max-h-screen md:py-2'}`}
           closeNav={() => setNavOpened(false)}
           isCollapsed={isCollapsed}
-          links={sidelinks}
+          links={filteredLinks} // Passa os links filtrados
         />
 
         {/* Scrollbar width toggle button */}
