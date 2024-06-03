@@ -15,6 +15,7 @@ export interface NavLink {
   href: string
   icon: JSX.Element
   roles?: string[] // Adiciona a propriedade roles para NavLink
+  token?: string // Adiciona a propriedade token para NavLink
 }
 
 export interface SideLink extends NavLink {
@@ -73,11 +74,14 @@ export const sidelinks: SideLink[] = [
   },
 ]
 
-export function getFilteredLinks(userRoles: string[]): SideLink[] {
+export function getFilteredLinks(userRoles: string[], token: string | null): SideLink[] {
   return sidelinks
-    .filter(link => !link.roles || link.roles.some(role => userRoles.includes(role)))
+    .filter(link => {
+      if (link.title === 'Login' && token) return false;
+      return !link.roles || link.roles.some(role => userRoles.includes(role));
+    })
     .map(link => ({
       ...link,
       sub: link.sub?.filter(subLink => !subLink.roles || subLink.roles.some(role => userRoles.includes(role))),
-    }))
+    }));
 }

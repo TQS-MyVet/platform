@@ -77,7 +77,7 @@ export default function HomePage() {
                     </Card>
                     </Link>
                 ))}
-                {user.roles.includes('DOCTOR') && homeCards.slice(0,2).map((card, index) => (
+                {user.roles.includes('DOCTOR') && !user.roles.includes('RECEPTIONIST') && homeCards.slice(0,2).map((card, index) => (
                   <Link key={index} to={card.link}>
                     <Card className='rounded-lg transition duration-500 ease-in-out transform hover:shadow-lg hover:brightness-75'>
                         <div className="relative flex w-full h-[355px] justify-center items-center">
