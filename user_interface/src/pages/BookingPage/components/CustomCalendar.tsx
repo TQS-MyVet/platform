@@ -37,7 +37,7 @@ export default function CustomCalendar() {
                 style={{ height: 600 }}
             />
             <EventDialog isOpen={isOpen} event={selectedEvent} setIsOpen={setIsOpen} />
-            {/* <HandleEventDialog isOpen={isHandleEventOpen} setIsOpen={setIsHandleEventOpen} selectedDates={selectedDates} setSavedEvents={setSavedEvents} savedEvents={savedEvents}/> */}
+            <HandleEventDialog isOpen={isHandleEventOpen} setIsOpen={setIsHandleEventOpen} selectedDates={selectedDates} setSavedEvents={setSavedEvents} savedEvents={savedEvents}/>
         </div>
     );
 }
