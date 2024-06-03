@@ -1,60 +1,45 @@
 import { Separator } from '@/components/ui/separator';
-
-const ticketsQueue1 = [
-  { id: 1, name: 'Ticket 1' },
-  { id: 2, name: 'Ticket 2' },
-  { id: 3, name: 'Ticket 3' },
-  { id: 7, name: 'Ticket 7' },
-  { id: 8, name: 'Ticket 8' },
-  { id: 9, name: 'Ticket 9' },
-  { id: 10, name: 'Ticket 10' },
-  { id: 11, name: 'Ticket 11' },
-];
-
-const ticketsQueue2 = [
-  { id: 4, name: 'Ticket 4' },
-  { id: 5, name: 'Ticket 5' },
-  { id: 6, name: 'Ticket 6' },
-  { id: 12, name: 'Ticket 12' },
-  { id: 13, name: 'Ticket 13' },
-  { id: 14, name: 'Ticket 14' },
-  { id: 15, name: 'Ticket 15' },
-  { id: 16, name: 'Ticket 16' },
-  { id: 17, name: 'Ticket 17' },
-  { id: 18, name: 'Ticket 18' },
-];
+import { QueueService } from '@/services/Client/QueueService';
+import { useQuery} from '@tanstack/react-query';
+import { GetQueue } from '@/utils/types';
 
 interface QueueProps {
-  tickets: { id: number; name: string }[];
+  tickets?: GetQueue[];
   bgColor?: string;
 }
 
 function Queue({ tickets, bgColor }: QueueProps) {
-  const firstTicket = tickets[0];
+  const firstTicket = tickets?.[0];
 
   return (
     <div className="p-4 flex flex-col h-full">
       {firstTicket && (
         <div className={`mb-4 p-8 border rounded-lg shadow-lg ${bgColor} text-white text-2xl font-bold w-full text-center`}>
-          {firstTicket.name}
+          {firstTicket ? `${firstTicket.queueType}-${String(firstTicket.queuePos).padStart(4, '0')}` : 'No Queue'}        </div>
+      )}
+      {!firstTicket && (
+        <div className={`mb-4 p-8 border rounded-lg shadow-lg ${bgColor} text-white text-2xl font-bold w-full text-center`}>
+          No Queue
         </div>
       )}
       <div className="overflow-y-auto flex-grow">
         <Separator className={`shadow-xl ${bgColor}`} />
         <div className="text-lg justify-center flex font-semibold p-4">
-            Queue Length: {tickets.length}
+            Queue Length: {tickets?.length}
         </div>
         <ul className='pr-1'>
-          {tickets.map((ticket) => (
+          {tickets?.map((ticket, index) => (
             <li
-              key={ticket.id}
+              key={index}
               className={`p-4 mb-4 border rounded-lg shadow-md ${
-                firstTicket.id === ticket.id
+                index === 0
                 ? `${bgColor} text-white`
                 : 'bg-white text-black'
               }`}
             >
-              <div className="text-lg font-semibold">{ticket.name}</div>
+              <div className="text-lg flex justify-center font-semibold">
+                {ticket.queueType}-{String(ticket.queuePos).padStart(4, '0')}
+              </div>
             </li>
           ))}
         </ul>
@@ -64,6 +49,23 @@ function Queue({ tickets, bgColor }: QueueProps) {
 }
 
 export default function DigitalSignagePage() {
+
+  const getQueue = async () => {
+    const response = await QueueService.getQueues();
+    return response.data;
+  }
+
+  const { data: queues, isLoading } = useQuery<GetQueue[], Error>({
+    queryKey: ['queues'],
+    queryFn: getQueue,
+    refetchInterval: 1000,
+  });
+
+  console.log(queues);
+
+  const receptionistQueue = queues?.[0];
+  const doctorQueue = queues?.[1];
+
   return (
     <div className="h-screen flex">
       <div className="w-1/2 bg-gray-100 border-r flex flex-col">
@@ -71,7 +73,7 @@ export default function DigitalSignagePage() {
           <h2 className="text-center text-2xl font-bold">Reception Queue</h2>
         </div>
         <div className="flex-grow overflow-y-auto">
-          <Queue tickets={ticketsQueue1} bgColor="bg-primary" />
+          <Queue tickets={receptionistQueue} bgColor="bg-primary" />
         </div>
       </div>
       <div className="w-1/2 bg-gray-200 flex flex-col">
@@ -79,7 +81,7 @@ export default function DigitalSignagePage() {
           <h2 className="text-center text-2xl font-bold">Doctor Queue</h2>
         </div>
         <div className="flex-grow overflow-y-auto">
-          <Queue tickets={ticketsQueue2} bgColor="bg-custom-yellow" />
+          <Queue tickets={doctorQueue} bgColor="bg-custom-yellow" />
         </div>
       </div>
     </div>
