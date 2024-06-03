@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Layout, LayoutBody } from '@/components/custom/layout';
 import { Separator } from '@/components/ui/separator';
 import { QueueService } from '@/services/Client/QueueService';
@@ -6,12 +6,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Queue } from '@/utils/types';
 import QueueSection from './components/QueueSection'; 
 import AddUserButton from './components/AddUserButton'; 
+import { useUserStore } from '@/stores/useUserStore';
 
 export default function QueuePage() {
-  const [userType, setUserType] = useState<'doctor' | 'receptionist'>('receptionist'); // Simulate user type
   const [addUserToQueue, setAddUserToQueue] = useState(false);
 
   const queryClient = useQueryClient();
+  const user = useUserStore();
+
 
   const getQueue = async () => {
     const response = await QueueService.getQueues();
@@ -37,10 +39,10 @@ export default function QueuePage() {
     }
   });
 
-  const handleDeleteHead = (queueType: 'doctor' | 'receptionist') => {
-    if (queueType === 'doctor') {
+  const handleDeleteHead = (queueType: string) => {
+    if (queueType === 'DOCTOR') {
       deleteFirstOfTheQueueDoctor.mutate();
-    } else if (queueType === 'receptionist') {
+    } else if (queueType === 'RECEPTIONIST') {
       deleteFirstOfTheQueueReceptionist.mutate();
     }
   };
@@ -64,26 +66,26 @@ export default function QueuePage() {
               Manage the queue of pets waiting to be seen by the vet.
             </p>
           </div>
-          <AddUserButton addUserToQueue={addUserToQueue} setAddUserToQueue={setAddUserToQueue} userType={userType} />
+          <AddUserButton addUserToQueue={addUserToQueue} setAddUserToQueue={setAddUserToQueue} userType={user.roles} />
         </div>
         <Separator />
         <div className='flex xl:flex-row flex-col justify-center pt-20 items-start gap-12'>
           <QueueSection
             queue={receptionistQueue}
             headOfQueue={headOfReceptionistQueue}
-            userType={userType}
+            userType={user.roles}
             addUserToQueue={addUserToQueue}
             handleDeleteHead={handleDeleteHead}
-            queueType="receptionist"
+            queueType="RECEPTIONIST"
             bgColor="bg-primary"
           />
           <QueueSection
             queue={doctorQueue}
             headOfQueue={headOfDoctorQueue}
-            userType={userType}
+            userType={user.roles}
             addUserToQueue={addUserToQueue}
             handleDeleteHead={handleDeleteHead}
-            queueType="doctor"
+            queueType="DOCTOR"
             bgColor="bg-custom-yellow"
           />
         </div>

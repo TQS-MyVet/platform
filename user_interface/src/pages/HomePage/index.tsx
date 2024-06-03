@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Carousel,
     CarouselContent,
@@ -13,6 +13,13 @@ import CarouselImage2 from '@/assets/carousel/carousel-image-2.jpg';
 import CarouselImage3 from '@/assets/carousel/carousel-image-3.jpg';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+
+//get user
+import { User } from '@/utils/types';
+import { UserService } from '@/services/Client/UserService';
+import { useQuery } from '@tanstack/react-query';
+import { useUserStore } from '@/stores/useUserStore';
+
 
 const slides = [
     {
@@ -36,6 +43,26 @@ const slides = [
 ];
 
 export default function HomePage() {
+
+    const user = useUserStore();
+
+    const getUserById = async () => {
+        const response = await UserService.getUserById(user.sub);
+        return response.data;
+    }
+
+    const { data, isSuccess } = useQuery<User>({
+        queryKey: ['user'],
+        queryFn: getUserById,
+        enabled: !!user.sub,
+    })
+
+    useEffect(() => {
+        if (isSuccess) {
+            useUserStore.getState().setUserInformation(data);
+        }
+    }, [isSuccess]);
+    
     return (
         <div className="flex flex-col items-center h-screen">
             <div className="relative w-full h-full">

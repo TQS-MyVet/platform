@@ -26,7 +26,6 @@ export const useUserStore = create<UserState & UserActions>((set) => ({
     roles: [],
     pets: [],
     sub: '',
-
     login: (token) => {
         const user = parseJWT(token);
         console.log(user);

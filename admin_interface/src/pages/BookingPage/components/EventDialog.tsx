@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Appointment } from '@/utils/types';
 import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/stores/useUserStore';
 
 interface EventDialogProps {
     isOpen: boolean;
@@ -17,6 +18,9 @@ interface EventDialogProps {
 }
 
 const EventDialog: React.FC<EventDialogProps> = ({ isOpen, event, setIsOpen }) => {
+
+  const user = useUserStore();
+
   if (!event) return null;
 
   return (
@@ -34,7 +38,8 @@ const EventDialog: React.FC<EventDialogProps> = ({ isOpen, event, setIsOpen }) =
             <p><strong>Start:</strong> {event.start.toLocaleString()}</p>
             <p><strong>End:</strong> {event.end.toLocaleString()}</p>
           </div>
-          <div className='flex pt-6 flex-row justify-center space-x-12'>
+          <div className='flex pt-6 flex-row justify-end space-x-2'>
+            {user.roles.includes('DOCTOR') && <Button className='bg-green-100 text-black hover:bg-green-200 hover:border'>Add Notes</Button>}
             <Button variant={'outline'}>Edit</Button>
             <Button variant='destructive'>Delete</Button>
           </div>

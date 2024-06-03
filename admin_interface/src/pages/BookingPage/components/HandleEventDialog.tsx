@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import '@/pages/BookingPage/components/css/DatePicker.css'
-import { Appointment, User } from '@/utils/types';
+import { Appointment, Pet, User } from '@/utils/types';
 import { UserService } from '@/services/Client/UserService';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -52,7 +52,6 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
     // Get all the accounts
     const getUsers = async () => {
         const response = await UserService.getUsers();
-        console.log(response.data);
         return response.data;
     };
 
@@ -78,6 +77,12 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         return (await UserService.getUserPets(ownerId)).data;
     }
 
+    const { data: ownerPets } = useQuery<Partial<Pet[]>, Error>({
+        queryKey: ['ownerPets, ', selectedUser?.id],
+        queryFn: getOwnerPets,
+        enabled: !!selectedUser,
+    });
+
 
     function onAppoitmentSubmit(data: any){
 
@@ -86,16 +91,16 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         const endDate = new Date(data.start);
         endDate.setMinutes(endDate.getMinutes() + estimatedDurationInMinutes);
 
+        console.log(data);
 
         //add event to the list of events
         const newEvent = {
             title: data.title,
             type: data.type,
-            doctor: data.doctor,
-            owner: Number(data.owner),
-            petName: data.petName,
-            start: data.start,
-            end: endDate,
+            doctorId: data.doctor.id,
+            petId: 1,
+            startDate: data.start,
+            endDate: endDate,
         };
 
         console.log(newEvent);
@@ -170,8 +175,8 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
                                         <FormLabel className='text-black'>Doctor</FormLabel>
                                         <FormControl>
                                             <Select onValueChange={(value) => {
-                                                    const selectedUser = users?.find(user => user.id.toString() === value);
-                                                    field.onChange(selectedUser);
+                                                    const selectedDoctor = users?.find(user => user.id.toString() === value);
+                                                    field.onChange(selectedDoctor);
                                                 }}>                                                
                                                 <SelectTrigger>
                                                     <SelectValue placeholder='Doctor' />
@@ -210,7 +215,18 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
                                     <FormItem>
                                         <FormLabel className='text-black'>Pet</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Dr. John Doe' {...field} />
+                                            <Select onValueChange={field.onChange} disabled={!selectedUser}>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder='Pet' />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {ownerPets?.map(pet => (
+                                                            <SelectItem key={pet?.id} value={pet.id.toString()}>{pet?.name}</SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

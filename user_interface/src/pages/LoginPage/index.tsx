@@ -26,6 +26,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, FormValues } from './components/schema';
 import { useNavigate } from '@tanstack/react-router'
 
+//login 
+import { useUserStore } from '@/stores/useUserStore';
+import { UserService } from '@/services/Client/UserService';
+import { useMutation } from '@tanstack/react-query';
+
 export default function LoginPage() {
   const navigate = useNavigate()
 
@@ -38,10 +43,27 @@ export default function LoginPage() {
       password: '',
     },
   });
+  
+  const login = async (values: FormValues) => {
+    return (await UserService.login(values)).data;
+  }
+
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      console.log(data)
+      useUserStore.getState().login(data.bearerToken)
+      navigate({ to: '/' })
+    },
+    onError: (error) => {
+      console.log('error')
+      console.log(error)
+
+    }
+  });
 
   const onSubmit = (values: FormValues) => {
-    console.log(values);
-    navigate({ to: '/' });
+    loginMutation.mutate(values);
   };
 
   return (

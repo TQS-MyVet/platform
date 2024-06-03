@@ -19,6 +19,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUserStore } from '@/stores/useUserStore';
+import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/custom/button';
 
 const services = [
   { value: 'Clinical analysis', label: 'Clinical analysis' },
@@ -36,9 +39,22 @@ function NavBar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+  const user = useUserStore();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    useUserStore.getState().logout();
+    toast({
+      variant: 'success',
+      title: 'Logged out successfully',
+      description: 'You have been logged out successfully',
+    })
+  }
+
+
 
   // Determine if the current path is the homepage
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === '/user/';
 
   return (
     <nav className={`sticky top-0 z-50`}>
@@ -56,20 +72,24 @@ function NavBar() {
           <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
             <div className="hidden sm:flex sm:items-center sm:ml-6">
               <div className="flex space-x-4 items-center">
-                <Link
-                  to="/booking"
-                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
-                >
-                  <CalendarPlus size={20} className="mr-2 md:block hidden" />
-                  Booking
-                </Link>
-                <Link
-                  to="/queue"
-                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
-                >
-                  <Clock size={20} className="mr-2 md:block hidden" />
-                  Queues & Wait Times
-                </Link>
+                {user.token && (
+                  <>
+                    <Link
+                      to="/booking"
+                      className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
+                    >
+                      <CalendarPlus size={20} className="mr-2 md:block hidden" />
+                      Booking
+                    </Link>
+                    <Link
+                      to="/queue"
+                      className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
+                    >
+                      <Clock size={20} className="mr-2 md:block hidden" />
+                      Queues & Wait Times
+                    </Link>
+                  </>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
@@ -90,24 +110,50 @@ function NavBar() {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Link
-                  to="/history"
-                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
-                >
-                  <History size={20} className="mr-2 md:block hidden" />
-                  Appointment's History
-                </Link>
+                {user.token && (
+                  <Link
+                    to="/history"
+                    className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
+                  >
+                    <History size={20} className="mr-2 md:block hidden" />
+                    Appointment's History
+                  </Link>
+                )}
               </div>
             </div>
           </div>
           <div className="hidden sm:flex sm:items-center">
-            <Link
-              to="/login"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-sm font-bold`}
-            >
-              <LogIn size={20} className='lg:block hidden' />
-              <span className="ml-2">Login</span>
-            </Link>
+            {!user.token ? (
+                <Link
+                  to="/login"
+                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LogIn size={20} className="mr-2" />
+                  <span className="ml-2">Login</span>
+                </Link>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                    >
+                      {user.name}
+                      <ChevronDown size={20} className="ml-2" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Link to="/profile">
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
+                        Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
           </div>
           <div className="sm:hidden flex items-center">
             <button
@@ -120,24 +166,28 @@ function NavBar() {
         </div>
       </div>
       {mobileMenuOpen && (
-        <div className={`sm:hidden ${isHomePage ? 'bg-transparent' : 'bg-white shadow-lg'}`}>
+        <div className={`sm:hidden ${isHomePage ? 'bg-transparent absolute right-0' : 'bg-white absolute shadow-lg right-0'}`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              to="/booking"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <CalendarPlus size={20} className="mr-2" />
-              Booking
-            </Link>
-            <Link
-              to="/queue"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Clock size={20} className="mr-2" />
-              Queues & Wait Times
-            </Link>
+            {user.token && (
+              <>
+                <Link
+                  to="/booking"
+                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <CalendarPlus size={20} className="mr-2" />
+                  Booking
+                </Link>
+                <Link
+                  to="/queue"
+                  className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Clock size={20} className="mr-2" />
+                  Queues & Wait Times
+                </Link>
+              </>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -157,22 +207,47 @@ function NavBar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link
-              to="/history"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <History size={20} className="mr-2" />
-              Appointment's History
-            </Link>
-            <Link
-              to="/login"
-              className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <LogIn size={20} />
-              <span className="ml-2">Login</span>
-            </Link>
+            {user.token && (
+              <Link
+                to="/history"
+                className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <History size={20} className="mr-2" />
+                Appointment's History
+              </Link>
+            )}
+            {!user.token ? (
+              <Link
+                to="/login"
+                className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <LogIn size={20} className="mr-2" />
+                <span className="ml-2">Login</span>
+              </Link>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`${isHomePage ? 'text-white' : 'text-black'} flex items-center hover:text-white hover:bg-primary px-3 py-2 rounded-md text-base font-bold`}
+                  >
+                    user.name 
+                    <ChevronDown size={20} className="ml-2" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link to="/profile">
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       )}

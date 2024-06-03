@@ -25,7 +25,7 @@ const addUserToQueueSchema = z.object({
 interface AddUserButtonProps {
     addUserToQueue: boolean;
     setAddUserToQueue: React.Dispatch<React.SetStateAction<boolean>>;
-    userType: 'doctor' | 'receptionist';
+    userType: string[];
 }
 
 const AddUserButton: React.FC<AddUserButtonProps> = ({ addUserToQueue, setAddUserToQueue, userType }) => {
@@ -122,7 +122,7 @@ const AddUserButton: React.FC<AddUserButtonProps> = ({ addUserToQueue, setAddUse
 
     return (
         <div className='flex items-center space-x-4'>
-            {!addUserToQueue && (
+            {!addUserToQueue && userType.includes('RECEPTIONIST') && (
                 <Button
                     onClick={() => setAddUserToQueue(true)}
                     className='px-4 py-2 text-lg'
@@ -133,7 +133,7 @@ const AddUserButton: React.FC<AddUserButtonProps> = ({ addUserToQueue, setAddUse
             {addUserToQueue && (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAddUserToQueue)} className='flex items-center space-x-3'>
-                        {userType === 'receptionist' && (
+                        {userType.includes('RECEPTIONIST') && (
                             <FormField control={form.control} name='queueType' render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
