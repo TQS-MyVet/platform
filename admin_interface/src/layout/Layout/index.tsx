@@ -3,6 +3,12 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Sidebar2 from './Sidebar';
 import useIsCollapsed from '@/hooks/use-is-collapsed'
+import { createRootRouteWithContext } from '@tanstack/react-router';
+import { useUserStore } from '@/stores/useUserStore';
+
+type RouterContext = {
+    token: string;
+};
 
 function RootComponent() {
     const [isCollapsed, setIsCollapsed] = useIsCollapsed();
@@ -22,6 +28,6 @@ function RootComponent() {
     );
 }
 
-export const RootRoute = createRootRoute<{}>({
+export const RootRoute = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
 });
