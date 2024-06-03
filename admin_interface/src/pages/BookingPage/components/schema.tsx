@@ -25,11 +25,10 @@ const userSchema = z.object({
   });
 
 const appointmentSchema = z.object({
-    owner: userSchema,
+    pet : petSchema,
     type: z.string().min(1, { message: 'Type is required' })
         .max(50, { message: 'Type must not be longer than 50 characters' }),
-    doctor: z.string().min(1, { message: 'Doctor name is required' })
-        .max(50, { message: 'Doctor name must not be longer than 50 characters' }),
+    doctor : userSchema,
     start: z.date(),
     estimatedDuration: z.string().refine(isValidTime, { message: 'Time must be in HH:mm format' }),
     title: z.string().min(1, { message: 'Title is required' })

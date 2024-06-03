@@ -13,6 +13,8 @@ import '@/pages/BookingPage/components/css/DatePicker.css'
 import { Appointment, User } from '@/utils/types';
 import { UserService } from '@/services/Client/UserService';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { Label } from '@/components/ui/label';
 
 
 interface HandleEventDialogProps {
@@ -26,14 +28,17 @@ interface HandleEventDialogProps {
 export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, setSavedEvents, savedEvents } : HandleEventDialogProps) { 
 
     // const { toast } = useToast();
+    const [doctor, setDoctor] = useState<User[]>([]);
+    const [clients, setClients] = useState<User[]>([]);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     const form = useForm<AppointmentFormValues>({
         resolver: zodResolver(appointmentSchema),
         defaultValues: {
             title: '',
             type: '',
-            doctor: '',
-            owner: Object.assign({}),
+            doctor: Object.assign({}),
+            pet: Object.assign({}),
             start: selectedDates[0],
             estimatedDuration: '',
         }
@@ -51,10 +56,28 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         return response.data;
     };
 
-    const { data: users, isLoading} = useQuery<User[], Error>({
+    const { data: users, isLoading, isSuccess} = useQuery<User[], Error>({
         queryKey: ['users'],
         queryFn: getUsers,
     });
+
+    useEffect(() => {
+        if(isSuccess){
+            const doctors = users?.filter(user => user.roles.includes('DOCTOR'));
+            const clients = users?.filter(user => !user.roles.includes('DOCTOR') && !user.roles.includes('RECEPTIONIST'));
+            setDoctor(doctors);
+            setClients(clients);
+        }
+    }, [isSuccess]);
+
+    const getOwnerPets = async () => {
+        const ownerId = (selectedUser?.id)?.toString();
+
+        if(!ownerId) return;
+
+        return (await UserService.getUserPets(ownerId)).data;
+    }
+
 
     function onAppoitmentSubmit(data: any){
 
@@ -63,12 +86,13 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
         const endDate = new Date(data.start);
         endDate.setMinutes(endDate.getMinutes() + estimatedDurationInMinutes);
 
+
         //add event to the list of events
         const newEvent = {
             title: data.title,
             type: data.type,
             doctor: data.doctor,
-            owner: data.owner,
+            owner: Number(data.owner),
             petName: data.petName,
             start: data.start,
             end: endDate,
@@ -145,28 +169,48 @@ export default function HandleEventDialog({ isOpen, setIsOpen, selectedDates, se
                                     <FormItem>
                                         <FormLabel className='text-black'>Doctor</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Dr. John Doe' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name='owner' render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='text-black'>Owner</FormLabel>
-                                        <FormControl>
                                             <Select onValueChange={(value) => {
                                                     const selectedUser = users?.find(user => user.id.toString() === value);
                                                     field.onChange(selectedUser);
                                                 }}>                                                
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder='Owner' />
+                                                    <SelectValue placeholder='Doctor' />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {users?.map(user => (
+                                                    {doctor?.map(user => (
                                                         <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <div className='space-y-2'>
+                                    <Label className='text-black'>Owner</Label>
+                                    <Select onValueChange={(value) => {
+                                            const selectedUser = users?.find(user => user.id.toString() === value) || null;
+                                            setSelectedUser(selectedUser);
+                                        }}> 
+                                        <SelectTrigger>
+                                            <SelectValue placeholder='Owner' />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {clients?.map(user => (
+                                                    <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <FormField control={form.control} name='pet' render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className='text-black'>Pet</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='Dr. John Doe' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

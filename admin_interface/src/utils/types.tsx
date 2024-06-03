@@ -18,7 +18,7 @@ export interface CreateUser{
 export interface CreatePet{
     name: string;
     sex: string;
-    birthdate: string;
+    birthdate: Date;
     species: string;
 }
 

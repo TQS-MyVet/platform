@@ -5,6 +5,11 @@ const client = createClient(config.API_USER_URL);
 
 const UserService = {
 
+    async login(data: any) {
+        console.log(data)
+        return await client.post('/login', data);
+    },
+
     async getUsers() {
         return await client.get('');
     },

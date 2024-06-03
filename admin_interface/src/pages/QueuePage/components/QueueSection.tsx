@@ -40,7 +40,7 @@ const QueueSection: React.FC<QueueSectionProps> = ({
             />
             <div className="absolute inset-0 flex items-center justify-center pr-14 sm:pr-20 lg:pr-24">
               <span className="xs:text-5xl text-4xl font-bold text-white">
-                {headOfQueue ? `P-${headOfQueue.queuePos.toString().padStart(4, '0')}` : 'No Queue'}
+                {headOfQueue ? `${headOfQueue.queueType}-${headOfQueue.queuePos.toString().padStart(4, '0')}` : 'No Queue'}
               </span>
             </div>
           </div>
