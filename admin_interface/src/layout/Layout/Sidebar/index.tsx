@@ -10,6 +10,7 @@ import LogoRedWhite from '@/assets/Logo Red White.png'
 import { useTheme } from '@/components/theme-provider'
 import { useUserStore } from '@/stores/useUserStore'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from '@tanstack/react-router'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean
@@ -25,6 +26,7 @@ export default function Sidebar2({
 
   const user = useUserStore()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     user.logout()
@@ -33,6 +35,7 @@ export default function Sidebar2({
       title: 'Logout successful',
       description: 'You have been successfully logged out',
     })
+    navigate({to: '/login'})
   }
 
   //verifica se esta em light ou dark mode

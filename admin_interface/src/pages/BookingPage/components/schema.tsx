@@ -7,6 +7,7 @@ const isValidTime = (value: string) => {
 
 // Define schema for Pet
 const petSchema = z.object({
+    id: z.number(),
     name: z.string().min(1, { message: 'Pet name is required' })
         .max(50, { message: 'Pet name must not be longer than 50 characters' }),
     sex: z.string().min(1, { message: 'Sex is required' }),
@@ -16,6 +17,7 @@ const petSchema = z.object({
   });
 
 const userSchema = z.object({
+    id: z.number(),
     name: z.string().min(1, { message: 'Owner name is required' })
         .max(50, { message: 'Owner name must not be longer than 50 characters' }),
     email: z.string().email({ message: 'Invalid email address' }),
@@ -25,7 +27,7 @@ const userSchema = z.object({
   });
 
 const appointmentSchema = z.object({
-    pet : petSchema,
+    pet : petSchema.optional(), 
     type: z.string().min(1, { message: 'Type is required' })
         .max(50, { message: 'Type must not be longer than 50 characters' }),
     doctor : userSchema,

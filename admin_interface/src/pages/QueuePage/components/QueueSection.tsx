@@ -12,9 +12,9 @@ import DoctorTicket from '@/assets/ticket-doctor.png';
 interface QueueSectionProps {
   queue: any[];
   headOfQueue: any;
-  userType: 'doctor' | 'receptionist';
-  handleDeleteHead: (queueType: 'doctor' | 'receptionist') => void;
-  queueType: 'doctor' | 'receptionist';
+  userType: string[];
+  handleDeleteHead: (queueType: string) => void;
+  queueType: string;
   bgColor: string;
 }
 
@@ -26,7 +26,7 @@ const QueueSection: React.FC<QueueSectionProps> = ({
   queueType,
   bgColor,
 }) => {
-  const ticketImage = queueType === 'doctor' ? DoctorTicket : Ticket;
+  const ticketImage = queueType === 'DOCTOR' ? DoctorTicket : Ticket;
 
   return (
     <div className='w-full max-w-xl flex flex-col h-full'>
@@ -56,8 +56,8 @@ const QueueSection: React.FC<QueueSectionProps> = ({
         <CardFooter className='flex justify-center space-x-4'>
           <Button
             onClick={() => handleDeleteHead(queueType)}
-            className={`px-4 py-2 text-lg ${bgColor}`}
-            disabled={userType !== queueType}
+            className={`px-4 py-2 text-lg ${bgColor} ${queueType === 'DOCTOR' ? 'hover:bg-amber-500 hover:opacity-80' : 'hover:bg-rose-400'}`}
+            disabled={queue?.length <= 1 || !userType.includes(queueType)}
           >
             Next in {queueType.charAt(0).toUpperCase() + queueType.slice(1)} Queue
           </Button>
@@ -65,12 +65,12 @@ const QueueSection: React.FC<QueueSectionProps> = ({
       </Card>
       <div className='mt-4 overflow-y-auto'>
         <h3 className='text-lg font-bold mb-2'>Next in {queueType.charAt(0).toUpperCase() + queueType.slice(1)} Queue</h3>
-        <ul className='space-y-2 max-h-96 overflow-y-auto'>
+        <ul className='space-y-2 max-h-[270px] overflow-y-auto'>
           {queue?.slice(1).map((ticket, index) => (
             <li
               key={ticket.userId}
               className={`p-4 rounded-lg shadow-md ${
-                index % 2 === 0 ? (queueType === 'doctor' ? 'bg-custom-yellow opacity-90' : 'bg-rose-400') : 'bg-gray-100'
+                index % 2 === 0 ? (queueType === 'DOCTOR' ? 'bg-custom-yellow opacity-90' : 'bg-rose-400') : 'bg-gray-100'
               }`}
             >
               <p>User ID: {ticket.userId}</p>

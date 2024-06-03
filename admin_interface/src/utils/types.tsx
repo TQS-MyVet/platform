@@ -37,7 +37,7 @@ export interface Pet {
     sex: string;
     birthdate: string;
     species: string;
-    UserId: number;
+    userId: number;
 }
 
 export interface Queue {
