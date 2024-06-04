@@ -25,6 +25,10 @@ const BookingService = {
         return await client.delete(`/${bookingId}`);
     },
 
+    async getBookingByPet(petId: string) {
+        return await client.get(`/pet/${petId}`);
+    },
+
     async getBookingByDate(date: string) {
         return await client.get(`/date/?date=${date}`);
     },
