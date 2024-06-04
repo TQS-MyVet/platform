@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Calendar } from 'react-big-calendar';
 import localizer from './localizer';
 import '@/pages/BookingPage/components/css/Calendar.css';
-import { events } from '@/data/appointments';
 import { GetAppointment, CalendarAppointments } from '@/utils/types';
 import EventDialog from './EventDialog';
 import HandleEventDialog from './HandleEventDialog';
