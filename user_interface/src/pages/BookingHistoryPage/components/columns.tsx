@@ -1,11 +1,11 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader } from './data-table-column-header'
-import { DataTableRowActions } from './data-table-row-actions'
-import { Task } from '../data/schema'
+// src/components/columns.ts
+import { ColumnDef } from '@tanstack/react-table';
+import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableRowActions } from './data-table-row-actions';
+import { Appointment } from '../data/schema';
+import { Checkbox } from '@/components/ui/checkbox';
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<Appointment>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -33,20 +33,20 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task ID' />
+      <DataTableColumnHeader column={column} title='Appointment ID' />
     ),
     cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'docNotes',
+    accessorKey: 'title',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Doc Notes' />
+      <DataTableColumnHeader column={column} title='Title' />
     ),
     cell: ({ row }) => (
       <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-        {row.getValue('docNotes')}
+        {row.getValue('title')}
       </span>
     ),
   },
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Task>[] = [
       </div>
     ),
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -75,7 +75,7 @@ export const columns: ColumnDef<Task>[] = [
       </div>
     ),
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -84,11 +84,45 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title='Start Date' />
     ),
     cell: ({ row }) => (
-      <span>{row.getValue('startDate')}</span>
+      <span>{new Date(row.getValue('startDate')).toLocaleString()}</span>
+    ),
+  },
+  {
+    accessorKey: 'endDate',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='End Date' />
+    ),
+    cell: ({ row }) => (
+      <span>{new Date(row.getValue('endDate')).toLocaleString()}</span>
+    ),
+  },
+  {
+    accessorKey: 'pet',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Pet' />
+    ),
+    cell: ({ row }) => (
+      <div className='flex items-center'>
+        <span>{row.getValue('pet')}</span>
+      </div>
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: 'docNotes',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Doc Notes' />
+    ),
+    cell: ({ row }) => (
+      <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+        {row.getValue('docNotes')}
+      </span>
     ),
   },
   {
     id: 'actions',
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
-]
+];

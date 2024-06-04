@@ -11,3 +11,36 @@ export const taskSchema = z.object({
 })
 
 export type Task = z.infer<typeof taskSchema>
+
+// src/data/schema.ts
+
+// src/data/schema.ts
+
+export interface Doctor {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  roles: string[];
+}
+
+export interface Pet {
+  id: number;
+  name: string;
+  sex: string;
+  birthdate: string;
+  species: string;
+}
+
+export interface Appointment {
+  id: number;
+  startDate: string;
+  endDate: string;
+  type: string;
+  docNotes: string;
+  title: string;
+  doctor: Doctor;
+  pet: Pet;
+}
+
+

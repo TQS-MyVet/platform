@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from '../components/data-table-view-options'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
 import { DataTableDateFilter } from './data-table-date-filter'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { UserService } from '@/services/Client/UserService'
+import { User } from '@/utils/types'
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -17,6 +20,7 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
   const [resetDate, setResetDate] = React.useState(false)
+  const [doctors, setDoctors] = React.useState<User[]>([])
 
   const handleReset = () => {
     table.resetColumnFilters()
@@ -24,14 +28,32 @@ export function DataTableToolbar<TData>({
     setTimeout(() => setResetDate(false), 0) // Reset the state back to false
   }
 
+  const getUsers = async () => {
+    const users = (await UserService.getUsers()).data as User[]
+    return users
+  }
+
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  })
+
+  useEffect(() => {
+    if (users) {
+      const doctors = users?.filter(user => user.roles.includes('DOCTOR'));
+      setDoctors(doctors)
+    }
+  }, [users])
+
+
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
           placeholder='Filter tasks...'
-          value={(table.getColumn('docNotes')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('docNotes')?.setFilterValue(event.target.value)
+            table.getColumn('title')?.setFilterValue(event.target.value)
           }
           className='h-8 w-[150px] lg:w-[250px]'
         />
@@ -41,13 +63,13 @@ export function DataTableToolbar<TData>({
               column={table.getColumn('type')}
               title='Type'
               options={[
-                { value: 'Clinical analysis', label: 'Clinical analysis' },
-                { value: 'Anesthesia/Analgesia', label: 'Anesthesia/Analgesia' },
-                { value: 'Soft Tissue Surgery', label: 'Soft Tissue Surgery' },
-                { value: 'Orthopedic Surgery', label: 'Orthopedic Surgery' },
-                { value: 'Dental Surgery', label: 'Dental Surgery' },
-                { value: 'Vaccination', label: 'Vaccination' },
-                { value: 'Consultation', label: 'Consultation' },
+                { value: 'clinicalAnalysis', label: 'Clinical analysis' },
+                { value: 'anesthesia', label: 'Anesthesia/Analgesia' },
+                { value: 'softSurgery', label: 'Soft Tissue Surgery' },
+                { value: 'orthopedicSurgery', label: 'Orthopedic Surgery' },
+                { value: 'dentalSurgery', label: 'Dental Surgery' },
+                { value: 'vaccination', label: 'Vaccination' },
+                { value: 'consultation', label: 'Consultation' },
                 { value: 'other', label: 'Other' },
               ]}
             />
@@ -56,13 +78,10 @@ export function DataTableToolbar<TData>({
             <DataTableFacetedFilter
               column={table.getColumn('doctor')}
               title='doctor'
-              options={[
-                { value: 'Dr. Smith', label: 'Dr. Smith' },
-                { value: 'Dr. Johnson', label: 'Dr. Johnson' },
-                { value: 'Dr. Williams', label: 'Dr. Williams' },
-                { value: 'Dr. Brown', label: 'Dr. Brown' },
-                { value: 'Dr. Jones', label: 'Dr. Jones' },
-              ]}
+              options={doctors.map((doctor) => ({
+                value: doctor.name,
+                label: doctor.name,
+              }))}
             />
           )}
           {table.getColumn('startDate') && (
