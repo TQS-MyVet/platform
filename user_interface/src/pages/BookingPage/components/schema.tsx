@@ -5,31 +5,11 @@ const isValidTime = (value: string) => {
     return timeRegex.test(value);
 };
 
-// Define schema for Pet
-const petSchema = z.object({
-    name: z.string().min(1, { message: 'Pet name is required' })
-        .max(50, { message: 'Pet name must not be longer than 50 characters' }),
-    sex: z.string().min(1, { message: 'Sex is required' }),
-    birthdate: z.string().min(1, { message: 'Birthdate is required' }),
-    species: z.string().min(1, { message: 'Species is required' }),
-    UserId: z.number(),
-  });
-
-const userSchema = z.object({
-    name: z.string().min(1, { message: 'Owner name is required' })
-        .max(50, { message: 'Owner name must not be longer than 50 characters' }),
-    email: z.string().email({ message: 'Invalid email address' }),
-    phone: z.string().min(1, { message: 'Phone number is required' }),
-    roles: z.array(z.string()),
-    pets: z.array(petSchema),
-  });
-
 const appointmentSchema = z.object({
-    owner: userSchema,
+    petId : z.string().min(1, { message: 'Pet is required' }),
     type: z.string().min(1, { message: 'Type is required' })
         .max(50, { message: 'Type must not be longer than 50 characters' }),
-    doctor: z.string().min(1, { message: 'Doctor name is required' })
-        .max(50, { message: 'Doctor name must not be longer than 50 characters' }),
+    doctor : z.any(),
     start: z.date(),
     estimatedDuration: z.string().refine(isValidTime, { message: 'Time must be in HH:mm format' }),
     title: z.string().min(1, { message: 'Title is required' })

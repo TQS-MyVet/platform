@@ -22,6 +22,7 @@ import {
 import { useUserStore } from '@/stores/useUserStore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/custom/button';
+import { useNavigate } from '@tanstack/react-router';
 
 const services = [
   { value: 'Clinical analysis', label: 'Clinical analysis' },
@@ -39,6 +40,8 @@ function NavBar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const user = useUserStore();
   const { toast } = useToast();
 
@@ -49,9 +52,10 @@ function NavBar() {
       title: 'Logged out successfully',
       description: 'You have been logged out successfully',
     })
+    navigate({
+      to: '/login',
+    })
   }
-
-
 
   // Determine if the current path is the homepage
   const isHomePage = location.pathname === '/user/';
