@@ -9,7 +9,7 @@ if (import.meta.env.PROD) {
     HOST = 'www.google.com';
     BASE_URL = `${scheme.HTTPS}${HOST}`;
 } else {
-    HOST = 'http://deti-tqs-03.ua.pt';
+    HOST = 'deti-tqs-03.ua.pt';
     BASE_URL = `${scheme.HTTP}${HOST}`;
 }
 
